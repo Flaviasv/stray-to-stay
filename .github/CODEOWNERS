@@ -1,0 +1,26 @@
+# Code ownership = who is automatically requested to review a pull request.
+# Replace the placeholder handles with the real GitHub usernames.
+#
+# Rule of thumb: frontend never edits backend paths, backend never edits frontend paths.
+# If a change truly needs both, open two PRs or ask one owner from each side to review.
+
+# --- Backend: Java, database, build, containers -------------------------------
+/src/main/java/                 @ALI_GITHUB @THOMAS_GITHUB
+/src/test/                      @ALI_GITHUB @THOMAS_GITHUB
+/src/main/resources/            @ALI_GITHUB @THOMAS_GITHUB
+/src/main/webapp/WEB-INF/web.xml @ALI_GITHUB @THOMAS_GITHUB
+/db/                            @ALI_GITHUB @THOMAS_GITHUB
+/pom.xml                        @ALI_GITHUB @THOMAS_GITHUB
+/Dockerfile                     @ALI_GITHUB @THOMAS_GITHUB
+/docker-compose.yml             @ALI_GITHUB @THOMAS_GITHUB
+
+# --- Frontend: JSP views, CSS, JavaScript, images ------------------------------
+/src/main/webapp/WEB-INF/views/ @KATERINA_GITHUB @AHMAD_GITHUB
+/src/main/webapp/static/        @KATERINA_GITHUB @AHMAD_GITHUB
+/src/main/webapp/*.jsp          @KATERINA_GITHUB @AHMAD_GITHUB
+
+# --- Shared: docs, repo rules --------------------------------------------------
+/docs/                          @FLAVIA_GITHUB @ALI_GITHUB @KATERINA_GITHUB
+/.github/                       @FLAVIA_GITHUB @ALI_GITHUB
+/README.md                      @FLAVIA_GITHUB
+/CONTRIBUTING.md                @FLAVIA_GITHUB @ALI_GITHUB

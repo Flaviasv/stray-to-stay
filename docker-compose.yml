@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    container_name: straytostay-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-straytostay}
+      POSTGRES_USER: ${DB_USER:-straytostay}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-straytostay}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Files in db/ run once, in alphabetical order, when the volume is first created:
+      # 01_schema.sql then 02_seed.sql
+      - ./db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-straytostay} -d ${DB_NAME:-straytostay}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: straytostay-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-straytostay}
+      DB_USER: ${DB_USER:-straytostay}
+      DB_PASSWORD: ${DB_PASSWORD:-straytostay}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

@@ -1,0 +1,21 @@
+/* StrayToStay base styles. Owned by the frontend team. */
+:root {
+  --color-primary: #2a6f4e;
+  --color-text: #222;
+  --color-bg: #fff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
