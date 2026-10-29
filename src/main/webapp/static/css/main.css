@@ -19,3 +19,33 @@ body {
   margin: 0 auto;
   padding: 24px 16px;
 }
+
+/* ---- layout ---- */
+.page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.brand { font-weight: 700; color: var(--color-primary); text-decoration: none; }
+.link { color: var(--color-primary); }
+h1 { margin: 0; font-size: 1.6rem; }
+
+/* ---- search form ---- */
+.filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 16px; }
+.filters label { display: flex; flex-direction: column; font-size: 0.9rem; gap: 4px; }
+.filters input[type="text"], .filters input[type="number"], .filters select { padding: 6px 8px; border: 1px solid #bbb; border-radius: 4px; min-width: 120px; }
+.filters button { padding: 8px 16px; background: var(--color-primary); color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+.result-count { color: #555; margin: 0 0 12px; }
+
+/* ---- pet cards ---- */
+.pet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.pet-card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+.pet-card h2 { margin: 0 0 4px; font-size: 1.1rem; }
+.pet-card h2 a { color: var(--color-text); text-decoration: none; }
+.meta { margin: 0 0 4px; color: #555; font-size: 0.9rem; }
+.tags { margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 0.75rem; background: #eef5f0; color: var(--color-primary); padding: 2px 8px; border-radius: 999px; }
+.tag-type { background: #fdf3e0; color: #8a5a10; }
+
+/* ---- pager ---- */
+.pager { display: flex; gap: 16px; justify-content: center; align-items: center; margin: 24px 0; }
+
+/* ---- detail ---- */
+.pet-detail h2 { font-size: 1.1rem; margin: 20px 0 6px; }
+.actions button[disabled] { opacity: 0.5; cursor: not-allowed; }
