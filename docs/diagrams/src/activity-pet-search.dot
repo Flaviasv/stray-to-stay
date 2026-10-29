@@ -1,0 +1,39 @@
+digraph activity_search {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=11, nodesep=0.4, ranksep=0.45, pad=0.3, label=<<b>Activity diagram — browse and filter pets</b>>, labelloc=t];
+  node  [fontname="Helvetica", fontsize=10];
+  edge  [fontname="Helvetica", fontsize=9, color="#333333"];
+
+  start [shape=circle, style=filled, fillcolor="#222222", label="", width=0.25];
+  end   [shape=doublecircle, style=filled, fillcolor="#222222", label="", width=0.25];
+
+  node [shape=box, style="filled,rounded", fillcolor="#e3ecf7", color="#3b6ea5"];
+  open      [label="User opens /pets\n(optionally with filters)"];
+  read      [label="Servlet reads filter parameters\nspecies, size, breed, city,\nmax age, good with kids, page"];
+  validate  [label="Validate against whitelist,\nclamp page and page size"];
+  build     [label="Build PetSearchCriteria\n(empty filters are ignored)"];
+  query     [label="PetDao runs the search\nPreparedStatement, LIMIT 12 OFFSET n"];
+  count     [label="PetDao counts total matches\nfor the pager"];
+  render    [label="Forward to pet-list.jsp\nrender cards and pager"];
+  empty     [label="Show 'no pets found'\nwith the filters still filled in"];
+  detail    [label="User opens a pet detail page"];
+  change    [label="User changes a filter\nor picks another page"];
+
+  node [shape=diamond, style=filled, fillcolor="#fdf3e0", color="#b5832a", fontsize=9, height=0.9];
+  valid   [label="input valid?"];
+  results [label="results > 0?"];
+  next    [label="what next?"];
+
+  start -> open -> read -> validate -> valid;
+  valid -> build   [label="yes"];
+  valid -> build   [label="no: invalid value\nreplaced by default", style=dashed];
+  build -> query -> count -> results;
+  results -> render [label="yes"];
+  results -> empty  [label="no"];
+  render -> next;
+  empty  -> next;
+  next -> detail [label="click a pet"];
+  next -> change [label="filter / page"];
+  change -> read;
+  detail -> end;
+  next -> end [label="leave"];
+}
