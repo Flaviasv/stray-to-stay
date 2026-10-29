@@ -1,0 +1,43 @@
+digraph architecture {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=11, nodesep=0.5, ranksep=0.55, pad=0.3, splines=spline, newrank=true];
+  node  [shape=box, style="filled,rounded", fontname="Helvetica", fontsize=10, margin="0.18,0.10"];
+  edge  [fontname="Helvetica", fontsize=9, color="#333333"];
+
+  browser [label=<<b>Web browser</b><br/><font point-size="9">adopter · foster carer · shelter staff</font>>, fillcolor="#f2f2f2", color="#555555"];
+
+  subgraph cluster_app {
+    label=<<b>Docker container: straytostay-app</b><br/><font point-size="9">Apache Tomcat 10.1 · Java 17 · port 8080</font>>;
+    style="rounded,dashed"; color="#3b6ea5"; bgcolor="#f7fbff"; fontname="Helvetica"; fontsize=10;
+
+    filters [label=<<b>FILTERS (front controller)</b><br/>AuthFilter — login, role, ownership<br/>CsrfFilter — token on every POST>, fillcolor="#e3ecf7", color="#3b6ea5"];
+    controller [label=<<b>CONTROLLER</b><br/>PetSearchServlet · PetDetailServlet<br/>RegisterServlet · LoginServlet<br/>ShelterPetServlet · PhotoUploadServlet · InquiryServlet<br/><font point-size="8"><i>one thread per request · no instance state</i></font>>, fillcolor="#dbe7f5", color="#3b6ea5"];
+    service [label=<<b>SERVICE</b><br/>PetService · UserService · ShelterService<br/>InquiryService · PhotoService<br/><font point-size="8"><i>business rules, transactions</i></font>>, fillcolor="#e6f3e6", color="#3a7d44"];
+    dao [label=<<b>DATA ACCESS</b><br/>PetDao · UserDao · ShelterDao · InquiryDao<br/>DaoFactory (Factory) · DataSourceProvider (Singleton)<br/>HikariCP pool, max 10 connections<br/><font point-size="8"><i>PreparedStatement only</i></font>>, fillcolor="#d9ecd9", color="#3a7d44"];
+    view [label=<<b>PRESENTATION</b><br/>JSP + JSTL — pet-list, pet-detail, login,<br/>register, shelter-dashboard, inquiry<br/><font point-size="8"><i>output escaped with &lt;c:out&gt;</i></font>>, fillcolor="#eef2f8", color="#3b6ea5"];
+    mail [label=<<b>MAIL SENDER</b><br/>background thread<br/>SMTP (Gmail / Mailtrap)>, fillcolor="#fdf3e0", color="#b5832a"];
+  }
+
+  subgraph cluster_db {
+    label=<<b>Docker container: straytostay-db</b><br/><font point-size="9">PostgreSQL 16 · port 5432 · named volume</font>>;
+    style="rounded,dashed"; color="#7a4ea5"; bgcolor="#fbf8ff"; fontname="Helvetica"; fontsize=10;
+    db [label=<<b>PostgreSQL 16</b><br/>users · shelters · pets · pet_photos · inquiries<br/><font point-size="8"><i>FK cascade · CHECK constraints · indexes on search columns</i></font>>, fillcolor="#ece3f5", color="#7a4ea5"];
+  }
+
+  photos [label=<<b>Photo volume</b><br/>outside the web root<br/>server-generated file names>, fillcolor="#fdf3e0", color="#b5832a"];
+  smtp   [label=<<b>SMTP server</b><br/>external>, fillcolor="#f2f2f2", color="#555555"];
+
+  browser -> filters    [label="HTTP request"];
+  filters -> controller;
+  controller -> service [label="calls"];
+  service -> dao        [label="calls"];
+  dao -> db             [label="JDBC"];
+  controller -> view    [label="forward (request attributes)", style=dashed, constraint=false];
+  view -> browser       [label="HTML response", style=dashed, constraint=false];
+  service -> photos     [label="store / read"];
+  service -> mail       [label="queue", constraint=false];
+  mail -> smtp          [label="send"];
+
+  { rank=same; controller; view; }
+  { rank=same; service; mail; }
+  { rank=same; dao; photos; smtp; }
+}

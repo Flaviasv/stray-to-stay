@@ -1,0 +1,185 @@
+digraph classes {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=11, nodesep=0.35, ranksep=0.6, pad=0.3, compound=true, splines=true, newrank=true];
+  node  [shape=plain, fontname="Helvetica", fontsize=9];
+  edge  [fontname="Helvetica", fontsize=8, color="#333333"];
+
+  // ---------- controller ----------
+  subgraph cluster_controller {
+    label=<<b>controller</b>  (Controller)>; style="rounded"; color="#3b6ea5"; bgcolor="#eef3fa"; fontname="Helvetica"; fontsize=10;
+
+    PetSearchServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>PetSearchServlet</b></td></tr>
+      <tr><td align="left">- doGet(req, resp)<br align="left"/>- readCriteria(req): PetSearchCriteria<br align="left"/></td></tr></table>>];
+    PetDetailServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>PetDetailServlet</b></td></tr>
+      <tr><td align="left">- doGet(req, resp)<br align="left"/></td></tr></table>>];
+    RegisterServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>RegisterServlet</b></td></tr>
+      <tr><td align="left">- doGet(req, resp)<br align="left"/>- doPost(req, resp)<br align="left"/></td></tr></table>>];
+    LoginServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>LoginServlet</b></td></tr>
+      <tr><td align="left">- doGet(req, resp)<br align="left"/>- doPost(req, resp)<br align="left"/>- logout(req, resp)<br align="left"/></td></tr></table>>];
+    ShelterPetServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>ShelterPetServlet</b></td></tr>
+      <tr><td align="left">- doGet(req, resp)<br align="left"/>- doPost(req, resp)<br align="left"/></td></tr></table>>];
+    PhotoUploadServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>PhotoUploadServlet</b></td></tr>
+      <tr><td align="left">- doPost(req, resp)<br align="left"/></td></tr></table>>];
+    InquiryServlet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>InquiryServlet</b></td></tr>
+      <tr><td align="left">- doGet(req, resp)<br align="left"/>- doPost(req, resp)<br align="left"/></td></tr></table>>];
+    AppContextListener [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dbe7f5"><b>AppContextListener</b></td></tr>
+      <tr><td align="left">+ contextInitialized(e)<br align="left"/>+ contextDestroyed(e)<br align="left"/></td></tr></table>>];
+  }
+
+  // ---------- filter ----------
+  subgraph cluster_filter {
+    label=<<b>filter</b>  (Front Controller)>; style="rounded"; color="#3b6ea5"; bgcolor="#e6edf7"; fontname="Helvetica"; fontsize=10;
+    AuthFilter [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#cfdcf0"><b>AuthFilter</b></td></tr>
+      <tr><td align="left">+ doFilter(req, resp, chain)<br align="left"/>- requiredRole(path): Role<br align="left"/>- ownsShelter(user, shelterId): boolean<br align="left"/></td></tr></table>>];
+    CsrfFilter [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#cfdcf0"><b>CsrfFilter</b></td></tr>
+      <tr><td align="left">+ doFilter(req, resp, chain)<br align="left"/>+ newToken(session): String {static}<br align="left"/></td></tr></table>>];
+  }
+
+  // ---------- service ----------
+  subgraph cluster_service {
+    label=<<b>service</b>  (Business rules)>; style="rounded"; color="#3a7d44"; bgcolor="#eef6ee"; fontname="Helvetica"; fontsize=10;
+    PetService [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#d9ecd9"><b>PetService</b></td></tr>
+      <tr><td align="left">+ search(criteria): PageResult&lt;Pet&gt;<br align="left"/>+ findById(id): Optional&lt;Pet&gt;<br align="left"/>+ create(pet, user): Pet<br align="left"/>+ update(pet, user): Pet<br align="left"/>+ changeStatus(id, status, user)<br align="left"/></td></tr></table>>];
+    UserService [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#d9ecd9"><b>UserService</b></td></tr>
+      <tr><td align="left">+ register(email, password, name, role): User<br align="left"/>+ authenticate(email, password): Optional&lt;User&gt;<br align="left"/></td></tr></table>>];
+    ShelterService [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#d9ecd9"><b>ShelterService</b></td></tr>
+      <tr><td align="left">+ findByOwner(userId): Optional&lt;Shelter&gt;<br align="left"/>+ save(shelter, user): Shelter<br align="left"/>+ isOwner(user, shelterId): boolean<br align="left"/></td></tr></table>>];
+    InquiryService [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#d9ecd9"><b>InquiryService</b></td></tr>
+      <tr><td align="left">+ create(petId, user, message, type): Inquiry<br align="left"/>+ listForShelter(shelterId): List&lt;Inquiry&gt;<br align="left"/>+ changeStatus(id, status, user)<br align="left"/></td></tr></table>>];
+    PhotoService [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#d9ecd9"><b>PhotoService</b></td></tr>
+      <tr><td align="left">+ store(petId, part, user): PetPhoto<br align="left"/>+ open(storedName): InputStream<br align="left"/>- validate(part)<br align="left"/></td></tr></table>>];
+  }
+
+  // ---------- dao ----------
+  subgraph cluster_dao {
+    label=<<b>dao</b>  (Data Access)>; style="rounded"; color="#3a7d44"; bgcolor="#e6f2e6"; fontname="Helvetica"; fontsize=10;
+    DaoFactory [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#c9e3c9">«Factory»<br/><b>DaoFactory</b></td></tr>
+      <tr><td align="left">+ petDao(): PetDao {static}<br align="left"/>+ userDao(): UserDao {static}<br align="left"/>+ shelterDao(): ShelterDao {static}<br align="left"/>+ inquiryDao(): InquiryDao {static}<br align="left"/>+ override(…) {static, tests only}<br align="left"/></td></tr></table>>];
+    PetDao [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#c9e3c9">«interface»<br/><b>PetDao</b></td></tr>
+      <tr><td align="left">+ findById(long): Optional&lt;Pet&gt;<br align="left"/>+ search(PetSearchCriteria): List&lt;Pet&gt;<br align="left"/>+ countSearch(PetSearchCriteria): int<br align="left"/>+ findByShelter(long): List&lt;Pet&gt;<br align="left"/>+ insert(Pet): Pet<br align="left"/>+ update(Pet): boolean<br align="left"/>+ updateStatus(long, Status): boolean<br align="left"/></td></tr></table>>];
+    UserDao [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#c9e3c9">«interface»<br/><b>UserDao</b></td></tr>
+      <tr><td align="left">+ findById(long): Optional&lt;User&gt;<br align="left"/>+ findByEmail(String): Optional&lt;User&gt;<br align="left"/>+ insert(User): User<br align="left"/></td></tr></table>>];
+    ShelterDao [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#c9e3c9">«interface»<br/><b>ShelterDao</b></td></tr>
+      <tr><td align="left">+ findById(long): Optional&lt;Shelter&gt;<br align="left"/>+ findByOwner(long): Optional&lt;Shelter&gt;<br align="left"/>+ insert(Shelter): Shelter<br align="left"/>+ update(Shelter): boolean<br align="left"/></td></tr></table>>];
+    InquiryDao [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#c9e3c9">«interface»<br/><b>InquiryDao</b></td></tr>
+      <tr><td align="left">+ findById(long): Optional&lt;Inquiry&gt;<br align="left"/>+ findOpen(petId, userId): Optional&lt;Inquiry&gt;<br align="left"/>+ findByShelter(long): List&lt;Inquiry&gt;<br align="left"/>+ insert(Inquiry): Inquiry<br align="left"/>+ updateStatus(long, Status): boolean<br align="left"/></td></tr></table>>];
+    PetDaoImpl [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#dcebdc"><b>PetDaoImpl</b></td></tr>
+      <tr><td align="left"><i>PostgreSQL, PreparedStatement only</i><br align="left"/>- buildFilter(criteria)<br align="left"/>- mapRow(rs): Pet<br align="left"/></td></tr></table>>];
+    UserDaoImpl    [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3"><tr><td bgcolor="#dcebdc"><b>UserDaoImpl</b></td></tr><tr><td align="left">- mapRow(rs): User<br align="left"/></td></tr></table>>];
+    ShelterDaoImpl [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3"><tr><td bgcolor="#dcebdc"><b>ShelterDaoImpl</b></td></tr><tr><td align="left">- mapRow(rs): Shelter<br align="left"/></td></tr></table>>];
+    InquiryDaoImpl [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3"><tr><td bgcolor="#dcebdc"><b>InquiryDaoImpl</b></td></tr><tr><td align="left">- mapRow(rs): Inquiry<br align="left"/></td></tr></table>>];
+    DaoException [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3"><tr><td bgcolor="#dcebdc"><b>DaoException</b></td></tr><tr><td align="left"><i>extends RuntimeException</i><br align="left"/></td></tr></table>>];
+  }
+
+  // ---------- model ----------
+  subgraph cluster_model {
+    label=<<b>model</b>  (Model)>; style="rounded"; color="#b5832a"; bgcolor="#fdf7ec"; fontname="Helvetica"; fontsize=10;
+    User [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8"><b>User</b></td></tr>
+      <tr><td align="left">- id: Long<br align="left"/>- email: String<br align="left"/>- passwordHash: String<br align="left"/>- fullName: String<br align="left"/>- role: Role<br align="left"/>- active: boolean<br align="left"/></td></tr>
+      <tr><td align="left">+ isShelterStaff(): boolean<br align="left"/></td></tr></table>>];
+    Shelter [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8"><b>Shelter</b></td></tr>
+      <tr><td align="left">- id: Long<br align="left"/>- ownerUserId: long<br align="left"/>- name: String<br align="left"/>- email, phone: String<br align="left"/>- city, province: String<br align="left"/></td></tr></table>>];
+    Pet [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8">«final, immutable»<br/><b>Pet</b></td></tr>
+      <tr><td align="left">- id: Long<br align="left"/>- shelterId: long<br align="left"/>- name: String<br align="left"/>- species: Species<br align="left"/>- breed: String<br align="left"/>- sex: Sex<br align="left"/>- ageMonths: Integer<br align="left"/>- size: Size<br align="left"/>- description, medicalNotes: String<br align="left"/>- vaccinated, neutered: boolean<br align="left"/>- goodWithKids, goodWithPets: Boolean<br align="left"/>- status: Status<br align="left"/>- listingType: ListingType<br align="left"/></td></tr>
+      <tr><td align="left">+ getAgeDisplay(): String<br align="left"/>+ builder(): Builder {static}<br align="left"/>+ toBuilder(): Builder<br align="left"/></td></tr></table>>];
+    PetBuilder [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8">«Builder»<br/><b>Pet.Builder</b></td></tr>
+      <tr><td align="left">+ name(String): Builder<br align="left"/>+ species(Species): Builder<br align="left"/>… one per field<br align="left"/>+ build(): Pet  <i>validates</i><br align="left"/></td></tr></table>>];
+    PetPhoto [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8"><b>PetPhoto</b></td></tr>
+      <tr><td align="left">- id: Long<br align="left"/>- petId: long<br align="left"/>- storedName: String<br align="left"/>- contentType: String<br align="left"/>- sizeBytes: long<br align="left"/>- primary: boolean<br align="left"/></td></tr></table>>];
+    Inquiry [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8"><b>Inquiry</b></td></tr>
+      <tr><td align="left">- id: Long<br align="left"/>- petId: long<br align="left"/>- userId: long<br align="left"/>- message: String<br align="left"/>- inquiryType: Type<br align="left"/>- status: Status<br align="left"/></td></tr></table>>];
+    PetSearchCriteria [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8"><b>PetSearchCriteria</b></td></tr>
+      <tr><td align="left">- species: Species<br align="left"/>- size: Size<br align="left"/>- breed, city: String<br align="left"/>- maxAgeMonths: Integer<br align="left"/>- goodWithKids: Boolean<br align="left"/>- page, pageSize: int<br align="left"/></td></tr>
+      <tr><td align="left">+ getOffset(): int<br align="left"/></td></tr></table>>];
+    PageResult [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8"><b>PageResult&lt;T&gt;</b></td></tr>
+      <tr><td align="left">- items: List&lt;T&gt;<br align="left"/>- page, pageSize, total: int<br align="left"/></td></tr>
+      <tr><td align="left">+ getTotalPages(): int<br align="left"/></td></tr></table>>];
+    Enums [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#f5e6c8">«enumerations»</td></tr>
+      <tr><td align="left"><b>Species</b>: DOG, CAT, RABBIT, BIRD, OTHER<br align="left"/><b>Sex</b>: MALE, FEMALE, UNKNOWN<br align="left"/><b>Size</b>: SMALL, MEDIUM, LARGE<br align="left"/><b>Status</b>: AVAILABLE, PENDING, ADOPTED, FOSTERED, WITHDRAWN<br align="left"/><b>ListingType</b>: ADOPTION, FOSTER, BOTH<br align="left"/><b>Role</b>: ADOPTER, SHELTER_STAFF, ADMIN<br align="left"/><b>Inquiry.Type</b>: ADOPTION, FOSTER<br align="left"/><b>Inquiry.Status</b>: NEW, READ, REPLIED, CLOSED<br align="left"/></td></tr></table>>];
+  }
+
+  // ---------- util ----------
+  subgraph cluster_util {
+    label=<<b>util</b>  (Infrastructure)>; style="rounded"; color="#7a4ea5"; bgcolor="#f7f2fb"; fontname="Helvetica"; fontsize=10;
+    DataSourceProvider [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#e6d9f2">«Singleton»<br/><b>DataSourceProvider</b></td></tr>
+      <tr><td align="left">- dataSource: HikariDataSource<br align="left"/>- DataSourceProvider()<br align="left"/>+ getInstance() {static}<br align="left"/>+ getConnection(): Connection<br align="left"/>+ shutdown()<br align="left"/></td></tr></table>>];
+    PasswordHasher [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#e6d9f2">«utility»<br/><b>PasswordHasher</b></td></tr>
+      <tr><td align="left">- COST = 12<br align="left"/>+ hash(String): String {static}<br align="left"/>+ verify(String, String): boolean {static}<br align="left"/></td></tr></table>>];
+    InputValidator [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#e6d9f2">«utility»<br/><b>InputValidator</b></td></tr>
+      <tr><td align="left">+ isValidEmail(String): boolean<br align="left"/>+ isValidPassword(String): boolean<br align="left"/>+ clean(String): String<br align="left"/>+ parseEnum(Class, String, E): E<br align="left"/>+ parseInt(String, int): int<br align="left"/></td></tr></table>>];
+    MailSender [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="3">
+      <tr><td bgcolor="#e6d9f2"><b>MailSender</b></td></tr>
+      <tr><td align="left">- executor: ExecutorService<br align="left"/>+ sendAsync(to, subject, body)<br align="left"/></td></tr></table>>];
+  }
+
+  // layout only: keep model and util under the dao layer
+  edge [style=invis];
+  PetDaoImpl -> Pet; UserDaoImpl -> User; InquiryDaoImpl -> Inquiry; ShelterDaoImpl -> Shelter;
+  DaoException -> DataSourceProvider;
+  { rank=same; PetSearchServlet; PetDetailServlet; RegisterServlet; LoginServlet; ShelterPetServlet; PhotoUploadServlet; InquiryServlet; AppContextListener; AuthFilter; CsrfFilter; }
+  { rank=same; PetService; UserService; ShelterService; InquiryService; PhotoService; }
+  { rank=same; PetDao; UserDao; ShelterDao; InquiryDao; DaoFactory; }
+  { rank=same; PetDaoImpl; UserDaoImpl; ShelterDaoImpl; InquiryDaoImpl; DaoException; }
+
+  // ---------- relationships ----------
+  edge [arrowhead=vee, style=dashed];                         // dependency
+  PetSearchServlet -> PetService;  PetDetailServlet -> PetService;  ShelterPetServlet -> PetService;
+  RegisterServlet -> UserService;  LoginServlet -> UserService;
+  ShelterPetServlet -> ShelterService;  PhotoUploadServlet -> PhotoService;  InquiryServlet -> InquiryService;
+  AuthFilter -> ShelterService;
+  PetSearchServlet -> PetSearchCriteria;
+  PetService -> DaoFactory;  UserService -> DaoFactory;  ShelterService -> DaoFactory;  InquiryService -> DaoFactory;  PhotoService -> DaoFactory;
+  UserService -> PasswordHasher;  RegisterServlet -> InputValidator;  PetSearchServlet -> InputValidator;
+  InquiryService -> MailSender;
+  DaoFactory -> PetDaoImpl [label="creates"];  DaoFactory -> UserDaoImpl;  DaoFactory -> ShelterDaoImpl;  DaoFactory -> InquiryDaoImpl;
+  PetDaoImpl -> DataSourceProvider [label="borrows connection"];
+  PetDaoImpl -> DaoException [label="throws"];
+  AppContextListener -> DataSourceProvider [label="starts / shuts down"];
+  PetService -> PageResult;
+
+  edge [arrowhead=empty, style=dashed];                       // implements
+  PetDaoImpl -> PetDao;  UserDaoImpl -> UserDao;  ShelterDaoImpl -> ShelterDao;  InquiryDaoImpl -> InquiryDao;
+
+  edge [arrowhead=none, style=solid, arrowtail=diamond, dir=back];   // composition
+  Pet -> PetBuilder [label="builds"];
+
+  edge [arrowhead=vee, style=solid, dir=forward, arrowtail=none];    // associations with multiplicity
+  User -> Shelter   [label="owns 0..1", taillabel="1"];
+  Shelter -> Pet    [label="lists *", taillabel="1"];
+  Pet -> PetPhoto   [label="has *", taillabel="1"];
+  Pet -> Inquiry    [label="receives *", taillabel="1"];
+  User -> Inquiry   [label="sends *", taillabel="1"];
+  Pet -> Enums      [style=dotted, arrowhead=vee];
+}
